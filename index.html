@@ -1,21 +1,939 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>PinkChat - Giao diện Chat Hồng Tối Giản</title>
-    <meta name="description" content="Giao diện web chat tông màu hồng, tối giản với nền ảnh kỷ niệm, hiệu ứng bo tròn góc mềm mại và bảng cài đặt âm nhạc mạch lạc." />
-    <meta property="og:title" content="PinkChat - Giao diện Chat Hồng Tối Giản" />
-    <meta property="og:description" content="Giao diện web chat tông màu hồng, tối giản với nền ảnh kỷ niệm, hiệu ứng bo tròn góc mềm mại và bảng cài đặt âm nhạc mạch lạc." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-  </head>
-  <body class="bg-pink-50 text-slate-800 antialiased selection:bg-pink-200 selection:text-pink-900 overflow-hidden">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>PinkChat - Kỷ Niệm CGV (Duy Lâm 🐶)</title>
+  <meta name="description" content="Giao diện web chat tông màu hồng tối giản kỷ niệm ngày 08/11/2026 tại CGV Hoàng Văn Thụ cùng bạn trai Duy Lâm." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #020617;
+      color: #1e293b;
+      overflow: hidden;
+      width: 100vw;
+      height: 100dvh;
+      user-select: none;
+    }
+
+    /* Zoom out 10% để có góc nhìn bao quát rộng rãi */
+    #app-root {
+      width: 100vw;
+      height: 100dvh;
+      zoom: 0.9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Nền làm mờ môi trường cho màn hình lớn */
+    .ambient-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('./assets/aistudio/image_e82f789c.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(40px);
+      opacity: 0.35;
+      transform: scale(1.1);
+      pointer-events-none;
+    }
+
+    .ambient-scrim {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(131, 24, 67, 0.25) 0%, rgba(2, 6, 23, 0.75) 100%);
+      pointer-events-none;
+    }
+
+    /* Khung chat chính */
+    .chat-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      max-width: 680px;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(236, 72, 153, 0.2);
+    }
+
+    @media (min-width: 768px) {
+      .chat-wrapper {
+        border-radius: 28px;
+        border: 1px solid rgba(244, 114, 182, 0.35);
+        height: 96%;
+        margin: auto;
+      }
+    }
+
+    /* Khu vực trò chuyện với hình nền ảnh gốc */
+    .chat-screen {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      background-image: url('./assets/aistudio/image_e82f789c.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+      transition: background-size 0.3s ease;
+    }
+
+    .chat-screen.contain-mode {
+      background-size: contain;
+    }
+
+    /* Lớp phủ tương phản giữ ảnh rõ nét */
+    .screen-tint {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.4) 100%);
+      pointer-events-none;
+      z-index: 1;
+    }
+
+    /* Thanh Header */
+    .chat-header {
+      position: relative;
+      z-index: 20;
+      flex-shrink: 0;
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(244, 114, 182, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .partner-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      padding: 2px;
+      background: linear-gradient(135deg, #f472b6, #fb7185, #ec4899);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .avatar-wrap img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .online-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+    }
+
+    .header-text {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .partner-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .partner-status {
+      font-size: 11px;
+      color: #db2777;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ec4899;
+      animation: pulse-ring 1.5s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-ring {
+      0% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    /* Header Actions */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(244, 114, 182, 0.4);
+      color: #db2777;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+
+    .action-btn:hover {
+      background: #fdf2f8;
+      transform: scale(1.05);
+    }
+
+    .music-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #fdf2f8;
+      border: 1px solid rgba(244, 114, 182, 0.4);
+      border-radius: 20px;
+      padding: 4px 8px;
+      cursor: pointer;
+      color: #9d174d;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .equalizer-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 1.5px;
+      height: 12px;
+      width: 12px;
+    }
+
+    .eq-bar {
+      width: 2.5px;
+      background: #ec4899;
+      border-radius: 2px;
+      animation: bounce-eq 0.8s ease-in-out infinite alternate;
+    }
+
+    .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+    .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce-eq {
+      0% { height: 3px; }
+      100% { height: 12px; }
+    }
+
+    /* Khu vực tin nhắn */
+    .messages-container {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Thanh cuộn hồng */
+    .messages-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .messages-container::-webkit-scrollbar-thumb {
+      background: rgba(244, 114, 182, 0.4);
+      border-radius: 4px;
+    }
+
+    /* Huy hiệu ngày hẹn hò */
+    .date-badge {
+      align-self: center;
+      padding: 4px 12px;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      color: #fbcfe8;
+      font-size: 11px;
+      font-weight: 500;
+      margin: 4px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Tin nhắn */
+    .message-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 2px;
+      animation: msg-in 0.25s ease-out;
+    }
+
+    @keyframes msg-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message-row.me {
+      align-items: flex-end;
+    }
+
+    .message-row.partner {
+      align-items: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 82%;
+      padding: 10px 14px;
+      border-radius: 20px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      position: relative;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+    }
+
+    .message-row.me .message-bubble {
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
+    }
+
+    .message-row.partner .message-bubble {
+      background: rgba(255, 255, 255, 0.95);
+      color: #1e293b;
+      border: 1px solid rgba(244, 114, 182, 0.35);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      font-size: 10px;
+      margin-top: 4px;
+      opacity: 0.75;
+    }
+
+    .message-row.me .msg-meta { color: #fce7f3; }
+    .message-row.partner .msg-meta { color: #64748b; }
+
+    /* Chỉ báo đang soạn tin */
+    .typing-indicator {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 0;
+      animation: msg-in 0.2s ease;
+    }
+
+    .typing-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #fdf2f8;
+      border: 1px solid #f472b6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .typing-bubble {
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(244, 114, 182, 0.35);
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: #ec4899;
+      border-radius: 50%;
+      animation: typing-bounce 1s infinite alternate;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing-bounce {
+      0% { transform: translateY(0); opacity: 0.4; }
+      100% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    .typing-label {
+      font-size: 11px;
+      color: #be185d;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+
+    /* Khung nhập liệu */
+    .chat-input-bar {
+      position: relative;
+      z-index: 20;
+      flex-shrink: 0;
+      padding: 10px 14px;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0.65) 100%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-pill {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(244, 114, 182, 0.5);
+      border-radius: 26px;
+      display: flex;
+      align-items: center;
+      padding: 4px 8px 4px 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      transition: border-color 0.2s;
+    }
+
+    .input-pill:focus-within {
+      border-color: #ec4899;
+      box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.25);
+    }
+
+    .chat-text-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 13.5px;
+      color: #0f172a;
+      font-family: inherit;
+    }
+
+    .chat-text-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .send-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+    }
+
+    .heart-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: #ec4899;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: transform 0.15s;
+    }
+
+    .heart-btn:active {
+      transform: scale(1.2);
+    }
+
+    /* Hiệu ứng rung nhẹ khi Gâu Gâu gửi tin nhắn */
+    @keyframes chat-shake {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      15% { transform: translateX(-4px) translateY(-1px) rotate(-0.3deg); }
+      30% { transform: translateX(4px) translateY(1px) rotate(0.3deg); }
+      45% { transform: translateX(-3px) translateY(0px) rotate(-0.15deg); }
+      60% { transform: translateX(3px) translateY(-0.5px) rotate(0.15deg); }
+      75% { transform: translateX(-1.5px) translateY(0.5px); }
+      90% { transform: translateX(1px) translateY(0); }
+    }
+
+    .animate-chat-shake {
+      animation: chat-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      box-shadow: 0 0 20px rgba(244, 114, 182, 0.5) !important;
+    }
+
+    /* Trái tim bay */
+    .floating-heart {
+      position: fixed;
+      pointer-events: none;
+      z-index: 100;
+      animation: float-heart-anim 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    @keyframes float-heart-anim {
+      0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-110px) scale(1.4) rotate(15deg); opacity: 0; }
+    }
+
+    /* Cửa sổ xem ảnh phóng to */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(244, 114, 182, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-root">
+    <!-- Nền môi trường -->
+    <div class="ambient-bg"></div>
+    <div class="ambient-scrim"></div>
+
+    <!-- Khung chat chính -->
+    <div class="chat-wrapper" id="chatWrapper">
+      <div class="chat-screen" id="chatScreen">
+        <div class="screen-tint"></div>
+
+        <!-- Header -->
+        <header class="chat-header">
+          <div class="partner-info">
+            <div class="avatar-wrap" id="avatarTrigger" title="Nhấn xem ảnh gốc">
+              <img src="./assets/aistudio/image_e82f789c.png" alt="Gâu Gâu" />
+              <span class="online-dot"></span>
+            </div>
+            <div class="header-text">
+              <div class="partner-name">Gâu Gâu 🐶 <span>✨</span></div>
+              <div class="partner-status" id="partnerStatus">
+                <span class="pulse-dot"></span>
+                <span id="statusText">Duy Lâm đang trực tuyến</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            <!-- Nút bật/tắt nhạc Phép Màu -->
+            <div class="music-pill" id="musicToggleBtn" title="Bật/Tắt bài Phép Màu">
+              <div class="equalizer-bars" id="eqBars" style="display: none;">
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+              </div>
+              <span id="musicLabel">Phép Màu</span>
+            </div>
+
+            <!-- Nút chuyển đổi ảnh vừa vặn (Contain) hoặc tràn viền (Cover) -->
+            <button class="action-btn" id="fitToggleBtn" title="Xem trọn vẹn ảnh / Tràn viền">⛶</button>
+            <!-- Nút thả tim -->
+            <button class="action-btn" id="heartBurstBtn" title="Thả chùm tim phát sáng">💖</button>
+          </div>
+        </header>
+
+        <!-- Danh sách tin nhắn -->
+        <div class="messages-container" id="messagesFeed">
+          <div class="date-badge">
+            <span>✨</span> 08/11/2026 · CGV Hoàng Văn Thụ
+          </div>
+
+          <!-- Tin nhắn mặc định duy nhất -->
+          <div class="message-row partner">
+            <div class="message-bubble">
+              Em nhớ giữ sức khoẻ, ăn uống đầy đủ và ngủ đúng giờ nhé! &lt;3
+              <div class="msg-meta">21:30</div>
+            </div>
+          </div>
+
+          <!-- Chỉ báo gõ phím -->
+          <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-avatar">🐶</div>
+            <div class="typing-bubble">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-label">Gâu Gâu đang soạn tin...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Khung nhập tin nhắn -->
+        <div class="chat-input-bar">
+          <div class="input-pill">
+            <input type="text" id="messageInput" class="chat-text-input" placeholder="Nhập tin nhắn với Gâu Gâu..." autocomplete="off" />
+            <button class="heart-btn" id="inputHeartBtn" title="Thả tim">❤️</button>
+          </div>
+          <button class="send-btn" id="sendBtn" title="Gửi tin nhắn">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal phóng to ảnh gốc -->
+  <div class="modal-overlay" id="imageModal">
+    <img src="./assets/aistudio/image_e82f789c.png" alt="Kỷ niệm CGV Hoàng Văn Thụ" class="modal-img" />
+  </div>
+
+  <!-- Audio bài hát Phép Màu -->
+  <audio id="bgMusic" src="./assets/aistudio/Ph_p_M_u_-_F47_Cover_x_Mounter_x_MAYDAYs__Minh_T_c_-_Ch_m_Music_Box__cut_273sec__32daddfe.mp3" loop preload="auto"></audio>
+
+  <script>
+    // Audio Context cho âm thanh tin nhắn
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playChime(isReceive = false) {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        if (isReceive) {
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.18); // G5
+        } else {
+          osc.frequency.setValueAtTime(659.25, now); // E5
+          osc.frequency.exponentialRampToValueAtTime(880.00, now + 0.14); // A5
+        }
+
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      } catch (e) {}
+    }
+
+    // Các phần tử DOM
+    const chatWrapper = document.getElementById('chatWrapper');
+    const chatScreen = document.getElementById('chatScreen');
+    const messagesFeed = document.getElementById('messagesFeed');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const statusText = document.getElementById('statusText');
+    const musicToggleBtn = document.getElementById('musicToggleBtn');
+    const eqBars = document.getElementById('eqBars');
+    const bgMusic = document.getElementById('bgMusic');
+    const fitToggleBtn = document.getElementById('fitToggleBtn');
+    const heartBurstBtn = document.getElementById('heartBurstBtn');
+    const inputHeartBtn = document.getElementById('inputHeartBtn');
+    const imageModal = document.getElementById('imageModal');
+    const avatarTrigger = document.getElementById('avatarTrigger');
+
+    // Chuyển đổi hiển thị vừa khung hoặc tràn viền
+    let isContain = false;
+    fitToggleBtn.addEventListener('click', () => {
+      isContain = !isContain;
+      chatScreen.classList.toggle('contain-mode', isContain);
+      fitToggleBtn.title = isContain ? 'Bấm để tràn viền' : 'Bấm để vừa vặn ảnh';
+    });
+
+    // Bật tắt nhạc Phép Màu
+    let isPlayingMusic = false;
+    musicToggleBtn.addEventListener('click', () => {
+      isPlayingMusic = !isPlayingMusic;
+      if (isPlayingMusic) {
+        bgMusic.play().catch(() => {});
+        eqBars.style.display = 'flex';
+      } else {
+        bgMusic.pause();
+        eqBars.style.display = 'none';
+      }
+    });
+
+    // Xem ảnh phóng to
+    avatarTrigger.addEventListener('click', () => imageModal.classList.add('open'));
+    imageModal.addEventListener('click', () => imageModal.classList.remove('open'));
+
+    // Thả tim bay phát sáng
+    function triggerHearts(originX, originY) {
+      const emojis = ['💖', '💕', '💗', '💓', '✨', '🌸', '❤️'];
+      const x = originX || window.innerWidth / 2;
+      const y = originY || window.innerHeight * 0.7;
+
+      for (let i = 0; i < 6; i++) {
+        const el = document.createElement('div');
+        el.className = 'floating-heart';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = (x + (Math.random() * 80 - 40)) + 'px';
+        el.style.top = (y + (Math.random() * 50 - 25)) + 'px';
+        el.style.fontSize = (Math.floor(Math.random() * 12) + 20) + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1600);
+      }
+    }
+
+    heartBurstBtn.addEventListener('click', (e) => triggerHearts(e.clientX, e.clientY));
+    inputHeartBtn.addEventListener('click', (e) => triggerHearts(e.clientX, e.clientY));
+
+    // Chuẩn hoá tiếng Việt
+    function removeDiacritics(str) {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
+    }
+
+    // Trí tuệ cảm xúc Duy Lâm AI
+    function getDuyLamResponse(userText) {
+      const norm = removeDiacritics(userText);
+
+      // Yêu cầu đặc biệt: "em nhớ anh" / "nhớ anh" / "muốn gặp anh"
+      if (/em nho anh|e nho anh|em nho a|e nho a|nho anh|nho a|muon gap anh|muon gap a/i.test(norm)) {
+        return {
+          text: 'Anh cũng đang nhớ em nè, tối mình gặp nhau em nhé! ❤️',
+          readDelay: 1600,
+          typingDuration: 3400
+        };
+      }
+
+      // Khi bạn gái gọi tên ("Anh", "Anh ơi", "Lâm ơi"...)
+      if (/^(anh|anh oi|a oi|lam oi|duy lam oi|anh yeu|anh dau roi|anh a)([\.!?\s]*)$/i.test(norm)) {
+        return {
+          text: 'Dạ. Anh đây ạ.',
+          readDelay: 1500,
+          typingDuration: 3000
+        };
+      }
+
+      // Trách móc, chửi, dỗi
+      if (/trach|chui|luon leo|dang ghet|dep di|nghi di|han anh|cut|ghet anh|ai bao|tai anh|anh lam sao|doi roi|gian anh/i.test(norm)) {
+        return {
+          text: 'A ngoan mà. K được suy diễn hướng này nha 🥺',
+          readDelay: 1700,
+          typingDuration: 4200
+        };
+      }
+
+      // Đau đầu
+      if (/dau dau|nhuc dau|nhuc oc|buot dau/i.test(norm)) {
+        return {
+          text: 'Dạ. Em đau đầu nhiều không ạ? Nghe anh dặn kỹ các bước này nhé:\n\n1. Uống ngay một cốc nước ấm hoặc trà gừng ấm giúp lưu thông máu.\n2. Bỏ điện thoại xuống, kéo rèm và tắt đèn để phòng thật yên tĩnh, mát mẻ.\n3. Lấy khăn ấm hoặc khăn mát chườm nhẹ lên trán và vùng sau gáy, day nhẹ hai thái dương.\n4. Nhớ ăn lót dạ nhẹ một xíu rồi hãy uống 1 viên Paracetamol 500mg nếu còn buốt đầu nhé.\n\nNgoan nằm nghỉ ngơi xíu đi em, thấy em mệt là anh xót lắm đấy ạ 🥺❤️',
+          readDelay: 1900,
+          typingDuration: 7200
+        };
+      }
+
+      // Đau tay, chấn thương
+      if (/dau tay|dau chan|dut tay|meo cao|te|nga|bam tim|tray xuoc/i.test(norm)) {
+        return {
+          text: 'Hả? Đau tay thế nào, đâu anh xem nào? Em bị va quẹt vào đâu hay sao vậy ạ?\n\nEm nhớ rửa sạch bằng nước muối sinh lý hoặc sát khuẩn cẩn thận rồi băng gạc lại liền nha. Đừng làm việc nặng hay động nước nhiều nữa nhé. Ngoan nghỉ tay xíu đi, anh xót quá nè 🥺',
+          readDelay: 1600,
+          typingDuration: 5200
+        };
+      }
+
+      // Không ngủ được
+      if (/khong ngu duoc|kho ngu|mat ngu|thuc khuya|chua ngu|ngu ko ngon/i.test(norm)) {
+        return {
+          text: 'Dạ. Sao hôm nay em khó ngủ vậy ạ? Bỏ điện thoại ra xa một chút, nhắm mắt lại rồi hít thở sâu, chậm rãi nè. Anh đang bật bài "Phép Màu" cho em nghe nè. Cố gắng ngủ sớm, mai sáng dậy đi dạo thể dục với anh cho khoẻ khoắn nha bấy bì! 🐶🌙',
+          readDelay: 1700,
+          typingDuration: 5400
+        };
+      }
+
+      // Đói, bỏ bữa
+      if (/doi|chua an|bo bua|nhin doi|an gi|an trua|an toi|an sang/i.test(norm)) {
+        return {
+          text: 'Không được nhịn đói hay bỏ bữa đâu đấy nhé! Trước chưa có anh thì sao cũng được, chứ giờ có anh rồi là phải ăn uống đầy đủ nghe chưa. Em muốn ăn gì kể anh nghe để anh đặt hoặc mang qua cho em liền nè? 🍿🥣',
+          readDelay: 1600,
+          typingDuration: 4800
+        };
+      }
+
+      // Mệt, sốt, ốm
+      if (/om|sot|met|dau bung|cam cum|viem hong|ho/i.test(norm)) {
+        return {
+          text: 'Dạ. Em thấy người mệt thế nào ạ? Đo nhiệt độ thử xem có bị sốt không em? Nhớ mặc đủ ấm, uống nhiều nước ấm và nghỉ ngơi sớm đi nhé. Cố gắng giữ tinh thần tốt em nhé, em bệnh là anh sốt ruột lắm á 🥺❤️',
+          readDelay: 1600,
+          typingDuration: 5200
+        };
+      }
+
+      // Mặc định
+      const defaults = [
+        'Dạ. Anh nghe em nói nè. Cố gắng giữ tinh thần tốt em nhé, có gì áp lực cứ chia sẻ với anh, anh luôn ở đây với em mà 🐶❤️',
+        'Dạ anh đây ạ. Nhớ ăn uống đầy đủ với uống nhiều nước vào nha em, đừng để anh phải lo đấy nhé bấy bì!',
+        'Đã lưu ý ạ! Bấy bì dặn là anh ghi nhớ liền nè. Tối nay nhớ ngủ sớm nha, không được thức bấm điện thoại muộn đâu đấy!',
+        'Anh đồng ý ạ! Lúc nào cũng yêu thương và chiều chuộng em nhất. Giữ sức khoẻ thật tốt để cuối tuần mình đi hẹn hò nhé ✨'
+      ];
+      return {
+        text: defaults[Math.floor(Math.random() * defaults.length)],
+        readDelay: 1600,
+        typingDuration: 4200
+      };
+    }
+
+    // Thêm tin nhắn vào giao diện
+    function appendMessage(text, isMe) {
+      const now = new Date();
+      const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+      const row = document.createElement('div');
+      row.className = 'message-row ' + (isMe ? 'me' : 'partner');
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.textContent = text;
+
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      meta.textContent = timeStr + (isMe ? ' ✓✓' : '');
+
+      bubble.appendChild(meta);
+      row.appendChild(bubble);
+
+      messagesFeed.insertBefore(row, typingIndicator);
+      messagesFeed.scrollTop = messagesFeed.scrollHeight;
+    }
+
+    // Rung nhẹ khung chat khi Gâu Gâu gửi tin nhắn
+    function triggerChatShake() {
+      chatWrapper.classList.add('animate-chat-shake');
+      setTimeout(() => chatWrapper.classList.remove('animate-chat-shake'), 460);
+
+      if (navigator.vibrate) {
+        try { navigator.vibrate([35, 45, 35]); } catch (e) {}
+      }
+    }
+
+    // Gửi tin nhắn
+    function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      appendMessage(text, true);
+      messageInput.value = '';
+      playChime(false);
+
+      if (/yêu|nhớ|thương|thích|tim/i.test(text)) {
+        triggerHearts();
+      }
+
+      // Xử lý phản hồi từ Duy Lâm
+      const replyData = getDuyLamResponse(text);
+
+      // Bước 1: Đã xem
+      statusText.textContent = 'Đã xem';
+
+      // Bước 2: Bắt đầu gõ sau readDelay
+      setTimeout(() => {
+        typingIndicator.style.display = 'flex';
+        statusText.textContent = 'Gâu Gâu đang soạn tin...';
+        messagesFeed.scrollTop = messagesFeed.scrollHeight;
+
+        // Bước 3: Hoàn tất gõ
+        setTimeout(() => {
+          typingIndicator.style.display = 'none';
+          statusText.textContent = 'Duy Lâm đang trực tuyến';
+          appendMessage(replyData.text, false);
+          playChime(true);
+          triggerChatShake();
+        }, replyData.typingDuration);
+      }, replyData.readDelay);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
