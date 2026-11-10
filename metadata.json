@@ -1,0 +1,6 @@
+{
+  "name": "PinkChat - Giao diện Chat Hồng Tối Giản",
+  "description": "Ứng dụng web chat giao diện hồng tối giản, bo tròn mềm mại với hình nền kỷ niệm và hệ thống cài đặt âm nhạc cấu trúc mạch lạc.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
