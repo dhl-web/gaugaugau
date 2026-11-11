@@ -50,14 +50,14 @@
       filter: blur(40px);
       opacity: 0.35;
       transform: scale(1.1);
-      pointer-events-none;
+      pointer-events: none;
     }
 
     .ambient-scrim {
       position: absolute;
       inset: 0;
       background: radial-gradient(circle, rgba(131, 24, 67, 0.25) 0%, rgba(2, 6, 23, 0.75) 100%);
-      pointer-events-none;
+      pointer-events: none;
     }
 
     /* Khung chat chính */
@@ -107,7 +107,7 @@
       position: absolute;
       inset: 0;
       background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.4) 100%);
-      pointer-events-none;
+      pointer-events: none;
       z-index: 1;
     }
 
@@ -775,7 +775,7 @@
       // Yêu cầu đặc biệt: "em nhớ anh" / "nhớ anh" / "muốn gặp anh"
       if (/em nho anh|e nho anh|em nho a|e nho a|nho anh|nho a|muon gap anh|muon gap a/i.test(norm)) {
         return {
-          text: 'Anh cũng đang nhớ em nè, tối mình gặp nhau em nhé! ❤️',
+          text: 'anh cũng đang nhớ e nè, tối mình gặp nhau e nhé <3',
           readDelay: 1600,
           typingDuration: 3400
         };
@@ -891,8 +891,8 @@
       }
     }
 
-    // Gửi tin nhắn
-    function sendMessage() {
+    // Gửi tin nhắn kết hợp Gemini AI và quy tắc dự phòng Duy Lâm
+    async function sendMessage() {
       const text = messageInput.value.trim();
       if (!text) return;
 
@@ -906,24 +906,54 @@
 
       // Xử lý phản hồi từ Duy Lâm
       const replyData = getDuyLamResponse(text);
+      const isCritical = /em nho anh|e nho anh|nho anh|muon gap anh/i.test(removeDiacritics(text));
+
+      // Gọi Gemini API trên máy chủ (nếu có server chạy)
+      const fetchGemini = (async () => {
+        if (isCritical) return null;
+        try {
+          const ctrl = new AbortController();
+          const t = setTimeout(() => ctrl.abort(), 8000);
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text }),
+            signal: ctrl.signal
+          });
+          clearTimeout(t);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.text && !data.fallback) return data.text;
+          }
+        } catch (e) {}
+        return null;
+      })();
 
       // Bước 1: Đã xem
       statusText.textContent = 'Đã xem';
 
       // Bước 2: Bắt đầu gõ sau readDelay
-      setTimeout(() => {
+      setTimeout(async () => {
         typingIndicator.style.display = 'flex';
         statusText.textContent = 'Gâu Gâu đang soạn tin...';
         messagesFeed.scrollTop = messagesFeed.scrollHeight;
+
+        let finalReply = replyData.text;
+        const geminiText = await fetchGemini;
+        if (geminiText) {
+          finalReply = geminiText;
+        }
+
+        const typingDuration = Math.max(3000, Math.min(8000, finalReply.length * 35 + 2000));
 
         // Bước 3: Hoàn tất gõ
         setTimeout(() => {
           typingIndicator.style.display = 'none';
           statusText.textContent = 'Duy Lâm đang trực tuyến';
-          appendMessage(replyData.text, false);
+          appendMessage(finalReply, false);
           playChime(true);
           triggerChatShake();
-        }, replyData.typingDuration);
+        }, typingDuration);
       }, replyData.readDelay);
     }
 
