@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>PinkChat - Kỷ Niệm CGV (Duy Lâm 🐶)</title>
-  <meta name="description" content="Giao diện web chat tông màu hồng tối giản kỷ niệm ngày 08/11/2026 tại CGV Hoàng Văn Thụ cùng bạn trai Duy Lâm." />
+  <title>PinkChat - Kỷ Niệm CGV (Gâu Gâu 🐶 & Thanh Hà)</title>
+  <meta name="description" content="Giao diện web chat tông màu hồng tối giản kỷ niệm ngày 08/11/2026 tại CGV Hoàng Văn Thụ cùng bạn trai Duy Lâm (Gâu Gâu 🐶)." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-  
+
   <style>
     * {
       box-sizing: border-box;
@@ -27,7 +27,7 @@
       user-select: none;
     }
 
-    /* Zoom out 10% để có góc nhìn bao quát rộng rãi */
+    /* Thu nhỏ 10% (zoom: 0.9) theo yêu cầu để có góc nhìn bao quát */
     #app-root {
       width: 100vw;
       height: 100dvh;
@@ -40,14 +40,14 @@
       overflow: hidden;
     }
 
-    /* Nền làm mờ môi trường cho màn hình lớn */
+    /* Nền môi trường mờ ảo cho màn hình lớn */
     .ambient-bg {
       position: absolute;
       inset: 0;
       background-image: url('./assets/aistudio/image_e82f789c.png');
       background-size: cover;
       background-position: center;
-      filter: blur(40px);
+      filter: blur(45px);
       opacity: 0.35;
       transform: scale(1.1);
       pointer-events: none;
@@ -56,11 +56,11 @@
     .ambient-scrim {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle, rgba(131, 24, 67, 0.25) 0%, rgba(2, 6, 23, 0.75) 100%);
+      background: radial-gradient(circle, rgba(131, 24, 67, 0.28) 0%, rgba(2, 6, 23, 0.8) 100%);
       pointer-events: none;
     }
 
-    /* Khung chat chính */
+    /* Khung ứng dụng chính */
     .chat-wrapper {
       position: relative;
       z-index: 10;
@@ -71,7 +71,8 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgba(236, 72, 153, 0.2);
+      box-shadow: 0 25px 50px -12px rgba(236, 72, 153, 0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     @media (min-width: 768px) {
@@ -83,7 +84,7 @@
       }
     }
 
-    /* Khu vực trò chuyện với hình nền ảnh gốc */
+    /* Khu vực trò chuyện với hình nền ảnh kỷ niệm */
     .chat-screen {
       position: relative;
       flex: 1;
@@ -102,11 +103,11 @@
       background-size: contain;
     }
 
-    /* Lớp phủ tương phản giữ ảnh rõ nét */
+    /* Lớp phủ tương phản giữ ảnh rõ nét và chữ nổi bật */
     .screen-tint {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.4) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0.06) 40%, rgba(0,0,0,0.45) 100%);
       pointer-events: none;
       z-index: 1;
     }
@@ -171,7 +172,7 @@
     }
 
     .partner-name {
-      font-size: 14px;
+      font-size: 14.5px;
       font-weight: 700;
       color: #0f172a;
       white-space: nowrap;
@@ -241,9 +242,9 @@
       align-items: center;
       gap: 5px;
       background: #fdf2f8;
-      border: 1px solid rgba(244, 114, 182, 0.4);
+      border: 1px solid rgba(244, 114, 182, 0.45);
       border-radius: 20px;
-      padding: 4px 8px;
+      padding: 4px 10px;
       cursor: pointer;
       color: #9d174d;
       font-size: 11px;
@@ -287,7 +288,6 @@
       gap: 10px;
     }
 
-    /* Thanh cuộn hồng */
     .messages-container::-webkit-scrollbar {
       width: 4px;
     }
@@ -529,10 +529,10 @@
 
     .animate-chat-shake {
       animation: chat-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-      box-shadow: 0 0 20px rgba(244, 114, 182, 0.5) !important;
+      box-shadow: 0 0 24px rgba(244, 114, 182, 0.6) !important;
     }
 
-    /* Trái tim bay */
+    /* Trái tim bay phát sáng */
     .floating-heart {
       position: fixed;
       pointer-events: none;
@@ -545,7 +545,7 @@
       100% { transform: translateY(-110px) scale(1.4) rotate(15deg); opacity: 0; }
     }
 
-    /* Cửa sổ xem ảnh phóng to */
+    /* Cửa sổ Modal chung */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -555,7 +555,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
     }
 
     .modal-overlay.open {
@@ -568,6 +568,135 @@
       border-radius: 20px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
       border: 1px solid rgba(244, 114, 182, 0.4);
+    }
+
+    /* Bảng Cài Đặt Âm Nhạc Xuất Ra Mạch Lạc */
+    .music-modal-box {
+      width: 100%;
+      max-width: 580px;
+      background: #ffffff;
+      border-radius: 24px;
+      border: 1px solid rgba(244, 114, 182, 0.6);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+      overflow: hidden;
+    }
+
+    .modal-header-row {
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #fdf2f8, #fff);
+      border-bottom: 1px solid #fce7f3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .modal-subtitle {
+      font-size: 11px;
+      color: #db2777;
+    }
+
+    .close-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .music-modal-body {
+      padding: 18px 20px;
+      overflow-y: auto;
+      font-size: 13px;
+      color: #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .setting-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .setting-group input[type="range"] {
+      width: 100%;
+      accent-color: #ec4899;
+      cursor: pointer;
+    }
+
+    .code-export-box {
+      background: #0f172a;
+      color: #fce7f3;
+      border-radius: 12px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11.5px;
+      max-height: 180px;
+      overflow-x: auto;
+      overflow-y: auto;
+      line-height: 1.5;
+      white-space: pre;
+    }
+
+    .modal-action-row {
+      padding: 12px 20px;
+      background: #fdf2f8;
+      border-top: 1px solid #fce7f3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .btn-pink {
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-pink:hover {
+      opacity: 0.92;
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      color: #db2777;
+      border: 1px solid #f472b6;
+      padding: 7px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -587,7 +716,7 @@
         <header class="chat-header">
           <div class="partner-info">
             <div class="avatar-wrap" id="avatarTrigger" title="Nhấn xem ảnh gốc">
-              <img src="./assets/aistudio/image_e82f789c.png" alt="Gâu Gâu" />
+              <img src="./assets/aistudio/image_e82f789c.png" alt="Gâu Gâu" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23f472b6\'/><text x=\'50%\' y=\'58%\' font-size=\'42\' text-anchor=\'middle\' fill=\'white\'>🐶</text></svg>';" />
               <span class="online-dot"></span>
             </div>
             <div class="header-text">
@@ -601,7 +730,7 @@
 
           <div class="header-actions">
             <!-- Nút bật/tắt nhạc Phép Màu -->
-            <div class="music-pill" id="musicToggleBtn" title="Bật/Tắt bài Phép Màu">
+            <div class="music-pill" id="musicToggleBtn" title="Bật/Tắt nhạc nền lofi">
               <div class="equalizer-bars" id="eqBars" style="display: none;">
                 <span class="eq-bar"></span>
                 <span class="eq-bar"></span>
@@ -610,9 +739,11 @@
               <span id="musicLabel">Phép Màu</span>
             </div>
 
+            <!-- Nút cài đặt âm thanh & xuất cấu hình -->
+            <button class="action-btn" id="openSettingsBtn" title="Cài đặt âm nhạc & Xuất cấu hình">⚙️</button>
             <!-- Nút chuyển đổi ảnh vừa vặn (Contain) hoặc tràn viền (Cover) -->
             <button class="action-btn" id="fitToggleBtn" title="Xem trọn vẹn ảnh / Tràn viền">⛶</button>
-            <!-- Nút thả tim -->
+            <!-- Nút thả chùm tim phát sáng -->
             <button class="action-btn" id="heartBurstBtn" title="Thả chùm tim phát sáng">💖</button>
           </div>
         </header>
@@ -623,15 +754,15 @@
             <span>✨</span> 08/11/2026 · CGV Hoàng Văn Thụ
           </div>
 
-          <!-- Tin nhắn mặc định duy nhất -->
+          <!-- Tin nhắn mặc định duy nhất theo đúng yêu cầu -->
           <div class="message-row partner">
             <div class="message-bubble">
-              Em nhớ giữ sức khoẻ, ăn uống đầy đủ và ngủ đúng giờ nhé! &lt;3
+              Em nhớ giữ sức khoe, Ăn uống đầy đủ và ngủ đúng giờ nhé! &lt;3
               <div class="msg-meta">21:30</div>
             </div>
           </div>
 
-          <!-- Chỉ báo gõ phím -->
+          <!-- Chỉ báo gõ phím chân thực -->
           <div class="typing-indicator" id="typingIndicator">
             <div class="typing-avatar">🐶</div>
             <div class="typing-bubble">
@@ -646,7 +777,7 @@
         <!-- Khung nhập tin nhắn -->
         <div class="chat-input-bar">
           <div class="input-pill">
-            <input type="text" id="messageInput" class="chat-text-input" placeholder="Nhập tin nhắn với Gâu Gâu..." autocomplete="off" />
+            <input type="text" id="messageInput" class="chat-text-input" placeholder="Nhắn tin với Gâu Gâu..." autocomplete="off" />
             <button class="heart-btn" id="inputHeartBtn" title="Thả tim">❤️</button>
           </div>
           <button class="send-btn" id="sendBtn" title="Gửi tin nhắn">➤</button>
@@ -655,28 +786,100 @@
     </div>
   </div>
 
-  <!-- Modal phóng to ảnh gốc -->
+  <!-- Modal phóng to ảnh kỷ niệm CGV -->
   <div class="modal-overlay" id="imageModal">
     <img src="./assets/aistudio/image_e82f789c.png" alt="Kỷ niệm CGV Hoàng Văn Thụ" class="modal-img" />
   </div>
 
-  <!-- Audio bài hát Phép Màu -->
+  <!-- Modal Cài Đặt Âm Nhạc & Xuất Cấu Trúc Rõ Ràng Mạch Lạc -->
+  <div class="modal-overlay" id="musicModal">
+    <div class="music-modal-box">
+      <div class="modal-header-row">
+        <div>
+          <div class="modal-title">Cài Đặt Âm Nhạc & Không Gian</div>
+          <div class="modal-subtitle">Cấu trúc cấu hình âm thanh chuẩn mực cho giao diện chat</div>
+        </div>
+        <button class="close-btn" id="closeMusicModalBtn">✕</button>
+      </div>
+
+      <div class="music-modal-body">
+        <div class="setting-group">
+          <label>
+            <span>Âm lượng nhạc nền (Master Music)</span>
+            <span id="musicVolLabel">65%</span>
+          </label>
+          <input type="range" id="musicVolSlider" min="0" max="100" value="65" />
+        </div>
+
+        <div class="setting-group">
+          <label>
+            <span>Hiệu ứng âm thanh trò chuyện (SFX)</span>
+            <span id="sfxVolLabel">75%</span>
+          </label>
+          <input type="range" id="sfxVolSlider" min="0" max="100" value="75" />
+        </div>
+
+        <div class="setting-group">
+          <label>
+            <span>Bộ cân bằng âm (Equalizer Preset)</span>
+          </label>
+          <select id="eqSelect" style="padding: 8px 12px; border-radius: 12px; border: 1px solid #f472b6; outline: none; background: #fff; font-size: 13px;">
+            <option value="warm-lofi">Lofi Ấm Áp (Tăng âm trầm nhẹ, giảm chát treble)</option>
+            <option value="balanced">Cân Bằng Chuẩn (Đáp ứng phẳng tự nhiên 0dB)</option>
+            <option value="crystal-romance">Trong Trẻo Lãng Mạn (Tôn giọng acoustic)</option>
+            <option value="deep-acoustic">Acoustic Trầm Sâu (Mộc mạc thư thái)</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <label>
+            <span>Cấu trúc cấu hình xuất ra mạch lạc (JSON):</span>
+          </label>
+          <div class="code-export-box" id="codeExportBox"></div>
+        </div>
+      </div>
+
+      <div class="modal-action-row">
+        <button class="btn-outline" id="copyConfigBtn">Sao chép cấu hình</button>
+        <button class="btn-pink" id="downloadConfigBtn">Tải tệp .json</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio bài hát Phép Màu (nếu có tệp cục bộ) -->
   <audio id="bgMusic" src="./assets/aistudio/Ph_p_M_u_-_F47_Cover_x_Mounter_x_MAYDAYs__Minh_T_c_-_Ch_m_Music_Box__cut_273sec__32daddfe.mp3" loop preload="auto"></audio>
 
   <script>
-    // Audio Context cho âm thanh tin nhắn
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    // Audio Context & Lofi Electric Piano Synthesizer Fallback
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
+    let synthTimer = null;
+    let isSynthPlaying = false;
+    let synthChordIndex = 0;
+
+    // Hợp âm Lofi Acoustic cho bài Phép Màu
+    const LOFI_CHORDS = [
+      [174.61, 220.0, 261.63, 329.63], // Fmaj7
+      [164.81, 196.0, 246.94, 293.66], // Em7
+      [146.83, 174.61, 220.0, 261.63], // Dm7
+      [130.81, 164.81, 196.0, 246.94]  // Cmaj7
+    ];
 
     function getAudioContext() {
-      if (!audioCtx) audioCtx = new AudioContext();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (!audioCtx && AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
       return audioCtx;
     }
 
+    // Hiệu ứng âm thanh khi gửi / nhận tin nhắn
     function playChime(isReceive = false) {
       try {
         const ctx = getAudioContext();
+        if (!ctx) return;
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -690,7 +893,8 @@
           osc.frequency.exponentialRampToValueAtTime(880.00, now + 0.14); // A5
         }
 
-        gain.gain.setValueAtTime(0.08, now);
+        const vol = (parseInt(document.getElementById('sfxVolSlider')?.value || '75', 10) / 100) * 0.09;
+        gain.gain.setValueAtTime(vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
 
         osc.connect(gain);
@@ -698,6 +902,60 @@
         osc.start(now);
         osc.stop(now + 0.28);
       } catch (e) {}
+    }
+
+    // Đánh một nốt Rhodes / Lofi Electric Piano nhẹ nhàng
+    function playSynthNote(freq, duration) {
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(850, ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + duration);
+
+        const baseVol = (parseInt(document.getElementById('musicVolSlider')?.value || '65', 10) / 100) * 0.05;
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(baseVol, ctx.currentTime + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function startLofiSynth() {
+      isSynthPlaying = true;
+      const step = () => {
+        if (!isSynthPlaying) return;
+        const chord = LOFI_CHORDS[synthChordIndex % LOFI_CHORDS.length];
+        synthChordIndex++;
+        chord.forEach((freq, idx) => {
+          setTimeout(() => {
+            if (isSynthPlaying) playSynthNote(freq, 2.6);
+          }, idx * 160);
+        });
+      };
+      step();
+      synthTimer = setInterval(step, 2400);
+    }
+
+    function stopLofiSynth() {
+      isSynthPlaying = false;
+      if (synthTimer) {
+        clearInterval(synthTimer);
+        synthTimer = null;
+      }
     }
 
     // Các phần tử DOM
@@ -717,6 +975,19 @@
     const imageModal = document.getElementById('imageModal');
     const avatarTrigger = document.getElementById('avatarTrigger');
 
+    // Cài đặt âm nhạc
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const musicModal = document.getElementById('musicModal');
+    const closeMusicModalBtn = document.getElementById('closeMusicModalBtn');
+    const musicVolSlider = document.getElementById('musicVolSlider');
+    const sfxVolSlider = document.getElementById('sfxVolSlider');
+    const eqSelect = document.getElementById('eqSelect');
+    const musicVolLabel = document.getElementById('musicVolLabel');
+    const sfxVolLabel = document.getElementById('sfxVolLabel');
+    const codeExportBox = document.getElementById('codeExportBox');
+    const copyConfigBtn = document.getElementById('copyConfigBtn');
+    const downloadConfigBtn = document.getElementById('downloadConfigBtn');
+
     // Chuyển đổi hiển thị vừa khung hoặc tràn viền
     let isContain = false;
     fitToggleBtn.addEventListener('click', () => {
@@ -725,24 +996,103 @@
       fitToggleBtn.title = isContain ? 'Bấm để tràn viền' : 'Bấm để vừa vặn ảnh';
     });
 
-    // Bật tắt nhạc Phép Màu
+    // Phát nhạc nền (ưu tiên audio element, fallback sang synth mượt mà)
     let isPlayingMusic = false;
     musicToggleBtn.addEventListener('click', () => {
       isPlayingMusic = !isPlayingMusic;
       if (isPlayingMusic) {
-        bgMusic.play().catch(() => {});
         eqBars.style.display = 'flex';
+        const vol = parseInt(musicVolSlider.value, 10) / 100;
+        bgMusic.volume = vol;
+        bgMusic.play().then(() => {
+          // Phát thành công qua audio tag
+        }).catch(() => {
+          // Không tìm thấy file hoặc autoplay policy, kích hoạt Web Audio Synth
+          startLofiSynth();
+        });
       } else {
         bgMusic.pause();
+        stopLofiSynth();
         eqBars.style.display = 'none';
       }
+      updateExportCode();
+    });
+
+    // Mở và đóng modal cài đặt âm nhạc
+    function updateExportCode() {
+      const config = {
+        app_name: "PinkChat CGV",
+        couple: {
+          boyfriend: "Duy Lâm (Gâu Gâu 🐶)",
+          girlfriend: "Thanh Hà"
+        },
+        memory_date: "2026-11-08",
+        venue: "CGV Hoàng Văn Thụ",
+        audio_engine: {
+          current_track: "Phép Màu - F47 Cover x Mounter x MAYDAYs (Chạm Music Box)",
+          is_playing: isPlayingMusic,
+          master_music_volume: parseInt(musicVolSlider.value, 10),
+          sound_effects_volume: parseInt(sfxVolSlider.value, 10),
+          equalizer: {
+            preset: eqSelect.value,
+            bass_boost_db: eqSelect.value === 'warm-lofi' ? 3.5 : 0.0,
+            mid_presence_db: eqSelect.value === 'crystal-romance' ? 2.5 : 0.0,
+            treble_softness_db: eqSelect.value === 'warm-lofi' ? -2.0 : 0.0
+          },
+          chat_feedback_audio: {
+            send_sound_enabled: true,
+            receive_sound_enabled: true,
+            haptic_shake_enabled: true
+          }
+        },
+        last_synced: new Date().toISOString()
+      };
+      codeExportBox.textContent = JSON.stringify(config, null, 2);
+    }
+
+    openSettingsBtn.addEventListener('click', () => {
+      updateExportCode();
+      musicModal.classList.add('open');
+    });
+
+    closeMusicModalBtn.addEventListener('click', () => {
+      musicModal.classList.remove('open');
+    });
+
+    musicVolSlider.addEventListener('input', () => {
+      musicVolLabel.textContent = musicVolSlider.value + '%';
+      bgMusic.volume = parseInt(musicVolSlider.value, 10) / 100;
+      updateExportCode();
+    });
+
+    sfxVolSlider.addEventListener('input', () => {
+      sfxVolLabel.textContent = sfxVolSlider.value + '%';
+      updateExportCode();
+    });
+
+    eqSelect.addEventListener('change', updateExportCode);
+
+    copyConfigBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(codeExportBox.textContent);
+      copyConfigBtn.textContent = 'Đã sao chép! ✓';
+      setTimeout(() => { copyConfigBtn.textContent = 'Sao chép cấu hình'; }, 2000);
+    });
+
+    downloadConfigBtn.addEventListener('click', () => {
+      const blob = new Blob([codeExportBox.textContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cai-dat-am-nhac-cgv.json';
+      a.click();
+      URL.revokeObjectURL(url);
     });
 
     // Xem ảnh phóng to
     avatarTrigger.addEventListener('click', () => imageModal.classList.add('open'));
     imageModal.addEventListener('click', () => imageModal.classList.remove('open'));
 
-    // Thả tim bay phát sáng
+    // Thả chùm tim phát sáng
     function triggerHearts(originX, originY) {
       const emojis = ['💖', '💕', '💗', '💓', '✨', '🌸', '❤️'];
       const x = originX || window.innerWidth / 2;
@@ -763,16 +1113,18 @@
     heartBurstBtn.addEventListener('click', (e) => triggerHearts(e.clientX, e.clientY));
     inputHeartBtn.addEventListener('click', (e) => triggerHearts(e.clientX, e.clientY));
 
-    // Chuẩn hoá tiếng Việt
+    // Chuẩn hoá tiếng Việt không dấu
     function removeDiacritics(str) {
       return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
     }
 
-    // Trí tuệ cảm xúc Duy Lâm AI
+    // Trí tuệ cảm xúc bạn trai Duy Lâm AI
     function getDuyLamResponse(userText) {
       const norm = removeDiacritics(userText);
 
-      // Yêu cầu đặc biệt: "em nhớ anh" / "nhớ anh" / "muốn gặp anh"
+      // YÊU CẦU QUAN TRỌNG NHẤT CỦA NGƯỜI DÙNG:
+      // Cô gái nhắn "em nhớ anh" (hoặc "nhớ anh", "muốn gặp anh") -> luôn trả lời đúng:
+      // "anh cũng đang nhớ e nè, tối mình gặp nhau e nhé <3"
       if (/em nho anh|e nho anh|em nho a|e nho a|nho anh|nho a|muon gap anh|muon gap a/i.test(norm)) {
         return {
           text: 'anh cũng đang nhớ e nè, tối mình gặp nhau e nhé <3',
@@ -786,29 +1138,29 @@
         return {
           text: 'Dạ. Anh đây ạ.',
           readDelay: 1500,
-          typingDuration: 3000
+          typingDuration: 2800
         };
       }
 
-      // Trách móc, chửi, dỗi
-      if (/trach|chui|luon leo|dang ghet|dep di|nghi di|han anh|cut|ghet anh|ai bao|tai anh|anh lam sao|doi roi|gian anh/i.test(norm)) {
+      // Khi bạn gái trách móc, chửi, dỗi hoặc giận hờn
+      if (/trach|chui|luon leo|dang ghet|dep di|nghi di|han anh|cut|ghet anh|ai bao|tai anh|anh lam sao|doi roi|gian anh|xao|gian roi/i.test(norm)) {
         return {
           text: 'A ngoan mà. K được suy diễn hướng này nha 🥺',
           readDelay: 1700,
-          typingDuration: 4200
+          typingDuration: 4000
         };
       }
 
-      // Đau đầu
+      // Quy trình chăm sóc chu đáo khi đau đầu
       if (/dau dau|nhuc dau|nhuc oc|buot dau/i.test(norm)) {
         return {
           text: 'Dạ. Em đau đầu nhiều không ạ? Nghe anh dặn kỹ các bước này nhé:\n\n1. Uống ngay một cốc nước ấm hoặc trà gừng ấm giúp lưu thông máu.\n2. Bỏ điện thoại xuống, kéo rèm và tắt đèn để phòng thật yên tĩnh, mát mẻ.\n3. Lấy khăn ấm hoặc khăn mát chườm nhẹ lên trán và vùng sau gáy, day nhẹ hai thái dương.\n4. Nhớ ăn lót dạ nhẹ một xíu rồi hãy uống 1 viên Paracetamol 500mg nếu còn buốt đầu nhé.\n\nNgoan nằm nghỉ ngơi xíu đi em, thấy em mệt là anh xót lắm đấy ạ 🥺❤️',
           readDelay: 1900,
-          typingDuration: 7200
+          typingDuration: 7000
         };
       }
 
-      // Đau tay, chấn thương
+      // Khi đau tay, chấn thương, trầy xước
       if (/dau tay|dau chan|dut tay|meo cao|te|nga|bam tim|tray xuoc/i.test(norm)) {
         return {
           text: 'Hả? Đau tay thế nào, đâu anh xem nào? Em bị va quẹt vào đâu hay sao vậy ạ?\n\nEm nhớ rửa sạch bằng nước muối sinh lý hoặc sát khuẩn cẩn thận rồi băng gạc lại liền nha. Đừng làm việc nặng hay động nước nhiều nữa nhé. Ngoan nghỉ tay xíu đi, anh xót quá nè 🥺',
@@ -817,7 +1169,7 @@
         };
       }
 
-      // Không ngủ được
+      // Khi mất ngủ, không ngủ được
       if (/khong ngu duoc|kho ngu|mat ngu|thuc khuya|chua ngu|ngu ko ngon/i.test(norm)) {
         return {
           text: 'Dạ. Sao hôm nay em khó ngủ vậy ạ? Bỏ điện thoại ra xa một chút, nhắm mắt lại rồi hít thở sâu, chậm rãi nè. Anh đang bật bài "Phép Màu" cho em nghe nè. Cố gắng ngủ sớm, mai sáng dậy đi dạo thể dục với anh cho khoẻ khoắn nha bấy bì! 🐶🌙',
@@ -826,7 +1178,7 @@
         };
       }
 
-      // Đói, bỏ bữa
+      // Nhắc nhở ăn uống khi đói hoặc bỏ bữa
       if (/doi|chua an|bo bua|nhin doi|an gi|an trua|an toi|an sang/i.test(norm)) {
         return {
           text: 'Không được nhịn đói hay bỏ bữa đâu đấy nhé! Trước chưa có anh thì sao cũng được, chứ giờ có anh rồi là phải ăn uống đầy đủ nghe chưa. Em muốn ăn gì kể anh nghe để anh đặt hoặc mang qua cho em liền nè? 🍿🥣',
@@ -835,7 +1187,7 @@
         };
       }
 
-      // Mệt, sốt, ốm
+      // Nhắc giữ gìn sức khoẻ khi mệt, sốt, ốm
       if (/om|sot|met|dau bung|cam cum|viem hong|ho/i.test(norm)) {
         return {
           text: 'Dạ. Em thấy người mệt thế nào ạ? Đo nhiệt độ thử xem có bị sốt không em? Nhớ mặc đủ ấm, uống nhiều nước ấm và nghỉ ngơi sớm đi nhé. Cố gắng giữ tinh thần tốt em nhé, em bệnh là anh sốt ruột lắm á 🥺❤️',
@@ -844,7 +1196,16 @@
         };
       }
 
-      // Mặc định
+      // Hỏi về sắc đẹp ("Xinh không", "Em đẹp không")
+      if (/xinh ko|xinh khong|dep ko|dep khong|co xinh/i.test(norm)) {
+        return {
+          text: 'Không... Thể nói là không xinh được ạ! Em cứ ở đó mà đẹp vậy đi, anh nhìn mê không dứt ra nổi đây nè 🥰✨',
+          readDelay: 1600,
+          typingDuration: 4200
+        };
+      }
+
+      // Mặc định chuẩn phong cách bạn trai Duy Lâm
       const defaults = [
         'Dạ. Anh nghe em nói nè. Cố gắng giữ tinh thần tốt em nhé, có gì áp lực cứ chia sẻ với anh, anh luôn ở đây với em mà 🐶❤️',
         'Dạ anh đây ạ. Nhớ ăn uống đầy đủ với uống nhiều nước vào nha em, đừng để anh phải lo đấy nhé bấy bì!',
@@ -854,11 +1215,11 @@
       return {
         text: defaults[Math.floor(Math.random() * defaults.length)],
         readDelay: 1600,
-        typingDuration: 4200
+        typingDuration: 4000
       };
     }
 
-    // Thêm tin nhắn vào giao diện
+    // Thêm tin nhắn vào màn hình
     function appendMessage(text, isMe) {
       const now = new Date();
       const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
@@ -881,7 +1242,7 @@
       messagesFeed.scrollTop = messagesFeed.scrollHeight;
     }
 
-    // Rung nhẹ khung chat khi Gâu Gâu gửi tin nhắn
+    // Hiệu ứng rung nhẹ (shake animation) cho khung chat khi Gâu Gâu gửi tin nhắn đến
     function triggerChatShake() {
       chatWrapper.classList.add('animate-chat-shake');
       setTimeout(() => chatWrapper.classList.remove('animate-chat-shake'), 460);
